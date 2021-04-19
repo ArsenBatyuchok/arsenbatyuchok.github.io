@@ -9,7 +9,7 @@
 
 <body>
 <div id="info">
-    Tattoo Table
+    Tattoo Table <span id="loading"></span>
 </div>
 
 <script type="module">
@@ -68,7 +68,6 @@
       object.position.y = -40;
       object.position.x = -40;
 
-      console.log(object);
       scene.add( object );
 
     }
@@ -94,6 +93,7 @@
 
         const percentComplete = xhr.loaded / xhr.total * 100;
         console.log( 'model ' + Math.round( percentComplete, 2 ) + '% downloaded' );
+        document.querySelector('#loading').innerHTML = `Loading: ${Math.round( percentComplete, 2 )}%`;
 
       }
 
