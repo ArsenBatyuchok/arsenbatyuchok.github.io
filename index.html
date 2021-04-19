@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>three.js webgl - loaders - OBJ loader</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="main.css">
+</head>
+
+<body>
+<div id="info">
+    Tattoo Table
+</div>
+
+<script type="module">
+
+  import * as THREE from './build/three.module.js';
+
+  import { OBJLoader } from './OBJLoader.js';
+  import { OrbitControls } from './OrbitControls.js';
+
+  let container;
+
+  let camera, scene, renderer;
+
+  let mouseX = 0, mouseY = 0;
+
+  let windowHalfX = window.innerWidth / 2;
+  let windowHalfY = window.innerHeight / 2;
+
+  let controls;
+
+  let object;
+
+  init();
+  animate();
+
+
+  function init() {
+
+    container = document.createElement( 'div' );
+    document.body.appendChild( container );
+
+    camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 9000 );
+    camera.position.z = 1900;
+
+    // scene
+
+    scene = new THREE.Scene();
+
+    const ambientLight = new THREE.AmbientLight( 0xcccccc, 0.4 );
+    scene.add( ambientLight );
+
+    const pointLight = new THREE.PointLight( 0xffffff, 0.8 );
+    camera.add( pointLight );
+    scene.add( camera );
+
+    // manager
+
+    function loadModel() {
+
+      object.traverse( function ( child ) {
+
+        if ( child.isMesh ) child.material.map = texture;
+
+      } );
+
+      object.position.y = -40;
+      object.position.x = -40;
+
+      console.log(object);
+      scene.add( object );
+
+    }
+
+    const manager = new THREE.LoadingManager( loadModel );
+
+    manager.onProgress = function ( item, loaded, total ) {
+
+      console.log( item, loaded, total );
+
+    };
+
+    // texture
+
+    const textureLoader = new THREE.TextureLoader( manager );
+    const texture = textureLoader.load( 'uv_grid_opengl.jpg' );
+
+    // model
+
+    function onProgress( xhr ) {
+
+      if ( xhr.lengthComputable ) {
+
+        const percentComplete = xhr.loaded / xhr.total * 100;
+        console.log( 'model ' + Math.round( percentComplete, 2 ) + '% downloaded' );
+
+      }
+
+    }
+
+    function onError() {}
+
+    const loader = new OBJLoader( manager );
+    loader.load( 'tatu.obj', function ( obj ) {
+
+      object = obj;
+
+    }, onProgress, onError );
+
+    //
+
+    renderer = new THREE.WebGLRenderer();
+    renderer.setPixelRatio( window.devicePixelRatio );
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    container.appendChild( renderer.domElement );
+
+    controls = new OrbitControls(camera, renderer.domElement)
+    controls.enableDamping = true
+
+
+    window.addEventListener( 'resize', onWindowResize );
+
+  }
+
+  function onWindowResize() {
+
+    windowHalfX = window.innerWidth / 2;
+    windowHalfY = window.innerHeight / 2;
+
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+
+    renderer.setSize( window.innerWidth, window.innerHeight );
+
+  }
+
+  function animate() {
+
+    // Update controls
+    controls.update()
+
+
+    requestAnimationFrame( animate );
+    render();
+
+  }
+
+  function render() {
+
+    // camera.position.x += 0;
+    // camera.position.y += 0;
+
+
+    if ((object || {}).position) {
+      camera.lookAt(  object.position );
+    }
+
+
+    renderer.render( scene, camera );
+
+  }
+
+</script>
+
+</body>
+</html>
