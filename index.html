@@ -89,17 +89,10 @@
 
     function onProgress( xhr ) {
 
-      if ( xhr.lengthComputable ) {
-
-        const percentComplete = Math.round(xhr.loaded / xhr.total * 100, 2);
-        if (percentComplete !== 100) {
-          document.querySelector('#loading').innerHTML = `Loading: ${percentComplete}%`;
-        } else {
-          document.querySelector('#loading').innerHTML = '';
-        }
-      }
+      
     }
     function onError() {}
+
 
     const loader = new OBJLoader( manager );
     loader.load( 'tatu.obj', function ( obj ) {
