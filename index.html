@@ -91,12 +91,13 @@
 
       if ( xhr.lengthComputable ) {
 
-        const percentComplete = xhr.loaded / xhr.total * 100;
-        console.log( 'model ' + Math.round( percentComplete, 2 ) + '% downloaded' );
-        document.querySelector('#loading').innerHTML = `Loading: ${Math.round( percentComplete, 2 )}%`;
-
+        const percentComplete = Math.round(xhr.loaded / xhr.total * 100, 2);
+        if (percentComplete !== 100) {
+          document.querySelector('#loading').innerHTML = `Loading: ${percentComplete}%`;
+        } else {
+          document.querySelector('#loading').innerHTML = '';
+        }
       }
-
     }
 
     function onError() {}
