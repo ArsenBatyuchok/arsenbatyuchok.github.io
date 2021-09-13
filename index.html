@@ -18,6 +18,7 @@
 
   import { OBJLoader } from './OBJLoader.js';
   import { OrbitControls } from './OrbitControls.js';
+  import { GLTFLoader } from './GLTFLoader.js';
 
   let container;
 
@@ -41,75 +42,42 @@
     container = document.createElement( 'div' );
     document.body.appendChild( container );
 
-    camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 9000 );
-    camera.position.z = 1900;
+    camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 1, 9000 );
+    camera.position.z = 7;
+    camera.position.x = 7;
+    camera.position.y = 17;
 
     // scene
 
     scene = new THREE.Scene();
 
-    const ambientLight = new THREE.AmbientLight( 0xcccccc, 0.4 );
+    const ambientLight = new THREE.AmbientLight( 0xcccccc, 1 );
     scene.add( ambientLight );
+
+    ambientLight.position.set(7, 17, 7);
 
     const pointLight = new THREE.PointLight( 0xffffff, 0.8 );
     camera.add( pointLight );
+      pointLight.position.set(7, 17, 7);
     scene.add( camera );
 
-    // manager
+    const loader = new GLTFLoader();
+    loader.load( 'tatu3.gltf', function ( gltf ) {
 
-    function loadModel() {
+        // gltf.scene.position.set(0, -1.5, -2);
+        const model = gltf.scene.children[6];
 
-      object.traverse( function ( child ) {
+        console.log(model.material);
+        // model.material.metalness = 0;
+        // model.children[1].material.metalness = 0;
 
-        if ( child.isMesh ) child.material.map = texture;
+      scene.add( gltf.scene );
 
-      } );
+    }, undefined, function ( error ) {
 
-      object.position.y = -40;
-      object.position.x = -40;
+      console.error( error );
 
-      scene.add( object );
-
-    }
-
-    const manager = new THREE.LoadingManager( loadModel );
-
-    manager.onProgress = function ( item, loaded, total ) {
-
-      console.log( item, loaded, total );
-
-    };
-
-    // texture
-
-    const textureLoader = new THREE.TextureLoader( manager );
-    const texture = textureLoader.load( 'uv_grid_opengl.jpg' );
-
-    // model
-
-    function onProgress( xhr ) {
-
-      if ( xhr.lengthComputable ) {
-
-        const percentComplete = Math.round(xhr.loaded / xhr.total * 100, 2);
-        if (percentComplete !== 100) {
-          document.querySelector('#loading').innerHTML = `Loading: ${percentComplete}%`;
-        } else {
-          document.querySelector('#loading').innerHTML = '';
-        }
-      }
-    }
-    function onError() {}
-
-
-    const loader = new OBJLoader( manager );
-    loader.load( 'tatu.obj', function ( obj ) {
-
-      object = obj;
-
-    }, onProgress, onError );
-
-    //
+    });
 
     renderer = new THREE.WebGLRenderer();
     renderer.setPixelRatio( window.devicePixelRatio );
@@ -148,14 +116,9 @@
   }
 
   function render() {
-
-    // camera.position.x += 0;
-    // camera.position.y += 0;
-
-
-    if ((object || {}).position) {
-      camera.lookAt(  object.position );
-    }
+    // if ((object || {}).position) {
+    //   camera.lookAt(  object.position );
+    // }
 
 
     renderer.render( scene, camera );
