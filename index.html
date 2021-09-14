@@ -61,13 +61,19 @@
       pointLight.position.set(7, 17, 7);
     scene.add( camera );
 
+      const geometry = new THREE.SphereGeometry( 1, 32, 16 );
+      const material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
+      const sphere = new THREE.Mesh( geometry, material );
+      scene.add( sphere );
+
+      sphere.position.set(4, 4, 4);
+
     const loader = new GLTFLoader();
     loader.load( 'tatu3.gltf', function ( gltf ) {
 
         // gltf.scene.position.set(0, -1.5, -2);
         const model = gltf.scene.children[6];
 
-        console.log(model.material);
         // model.material.metalness = 0;
         // model.children[1].material.metalness = 0;
 
